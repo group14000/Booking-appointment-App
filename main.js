@@ -5,18 +5,63 @@ document.addEventListener("DOMContentLoaded", function () {
   // Load existing data from localStorage
   const storedData = JSON.parse(localStorage.getItem("userData")) || [];
 
-  // Display existing data on page load
-  storedData.forEach((user, index) => {
-    const li = document.createElement("li");
-    li.textContent = `${user.name} | ${user.email} | ${user.number}`;
-    
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Delete";
-    deleteButton.addEventListener("click", () => deleteUser(index));
-    
-    li.appendChild(deleteButton);
-    usersList.appendChild(li);
-  });
+  // Function to display users on page
+  function displayUsers() {
+    usersList.innerHTML = ""; // Clear previous list items
+    storedData.forEach((user, index) => {
+      const li = document.createElement("li");
+      li.textContent = `${user.name} | ${user.email} | ${user.number}`;
+
+      const editButton = document.createElement("button");
+      editButton.textContent = "Edit";
+      editButton.addEventListener("click", () => editUser(index));
+
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Delete";
+      deleteButton.addEventListener("click", () => deleteUser(index));
+
+      li.appendChild(editButton);
+      li.appendChild(deleteButton);
+
+      usersList.appendChild(li);
+    });
+  }
+
+  // Initial display of users on page load
+  displayUsers();
+
+  // Edit user function
+  function editUser(index) {
+    const user = storedData[index];
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const numberInput = document.getElementById("number");
+
+    nameInput.value = user.name;
+    emailInput.value = user.email;
+    numberInput.value = user.number;
+
+    // Remove the edited user from the list
+    storedData.splice(index, 1);
+
+    // Update localStorage
+    localStorage.setItem("userData", JSON.stringify(storedData));
+
+    // Update displayed user list
+    displayUsers();
+  }
+
+  // Delete user function
+  function deleteUser(index) {
+    // Remove the user from the list
+    storedData.splice(index, 1);
+
+    // Update localStorage
+    localStorage.setItem("userData", JSON.stringify(storedData));
+
+    // Update displayed user list
+    displayUsers();
+  }
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -41,16 +86,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // Save updated data to localStorage
       localStorage.setItem("userData", JSON.stringify(storedData));
 
-      // Display the new user on the page
-      const li = document.createElement("li");
-      li.textContent = `${name} | ${email} | ${number}`;
-      
-      const deleteButton = document.createElement("button");
-      deleteButton.textContent = "Delete";
-      deleteButton.addEventListener("click", () => deleteUser(storedData.length - 1));
-      
-      li.appendChild(deleteButton);
-      usersList.appendChild(li);
+      // Update displayed user list
+      displayUsers();
 
       // Clear input fields
       nameInput.value = "";
@@ -67,22 +104,4 @@ document.addEventListener("DOMContentLoaded", function () {
       alert("Please fill in all the fields.");
     }
   });
-
-  function deleteUser(index) {
-    storedData.splice(index, 1);
-    localStorage.setItem("userData", JSON.stringify(storedData));
-    usersList.innerHTML = "";
-    
-    storedData.forEach((user, idx) => {
-      const li = document.createElement("li");
-      li.textContent = `${user.name} | ${user.email} | ${user.number}`;
-      
-      const deleteButton = document.createElement("button");
-      deleteButton.textContent = "Delete";
-      deleteButton.addEventListener("click", () => deleteUser(idx));
-      
-      li.appendChild(deleteButton);
-      usersList.appendChild(li);
-    });
-  }
 });
