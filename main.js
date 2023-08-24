@@ -6,9 +6,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const storedData = JSON.parse(localStorage.getItem("userData")) || [];
 
   // Display existing data on page load
-  storedData.forEach((user) => {
+  storedData.forEach((user, index) => {
     const li = document.createElement("li");
     li.textContent = `${user.name} | ${user.email} | ${user.number}`;
+    
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", () => deleteUser(index));
+    
+    li.appendChild(deleteButton);
     usersList.appendChild(li);
   });
 
@@ -38,6 +44,12 @@ document.addEventListener("DOMContentLoaded", function () {
       // Display the new user on the page
       const li = document.createElement("li");
       li.textContent = `${name} | ${email} | ${number}`;
+      
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Delete";
+      deleteButton.addEventListener("click", () => deleteUser(storedData.length - 1));
+      
+      li.appendChild(deleteButton);
       usersList.appendChild(li);
 
       // Clear input fields
@@ -55,4 +67,22 @@ document.addEventListener("DOMContentLoaded", function () {
       alert("Please fill in all the fields.");
     }
   });
+
+  function deleteUser(index) {
+    storedData.splice(index, 1);
+    localStorage.setItem("userData", JSON.stringify(storedData));
+    usersList.innerHTML = "";
+    
+    storedData.forEach((user, idx) => {
+      const li = document.createElement("li");
+      li.textContent = `${user.name} | ${user.email} | ${user.number}`;
+      
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Delete";
+      deleteButton.addEventListener("click", () => deleteUser(idx));
+      
+      li.appendChild(deleteButton);
+      usersList.appendChild(li);
+    });
+  }
 });
